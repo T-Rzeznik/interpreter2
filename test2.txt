@@ -1,0 +1,7 @@
+z := 7$
+
+a = $
+
+b = 3
+
+//3 Statements that shouldnt work

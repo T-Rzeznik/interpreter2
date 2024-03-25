@@ -1,0 +1,9 @@
+x = 10$
+print x
+
+y = 5 + 2 * 3$
+print y
+
+status
+
+//3 Statements that should run fine
