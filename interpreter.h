@@ -53,6 +53,7 @@ private:
         out << endl;
         return out;
     }
+    bool findId(char *id);
 };
 
 #endif
