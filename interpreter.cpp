@@ -40,30 +40,17 @@ double Statement::factor() {
     static char id[200];
     cin >> ch;
 
-    // Handle exponentiation
-    if (ch == '^') {
-        cin >> ch; // Consume the '^' symbol
-
-        // Parse the exponent
-        double exponent = factor();
-
-        // Calculate exponentiation
-        return pow(var, exponent);
-    }
-
     if (isdigit(ch) || ch == '.') {      // Factor can be a number
          cin.putback(ch);
          cin >> var >> ch;
 
         // Check for exponentiation after parsing the number
         if (ch == '^') {
-            cin >> ch; // Consume the '^' symbol
+            cin >> ch; // get the '^' symbol
 
-            // Parse the exponent
-            double exponent = factor();
+            double exponent = factor(); // Parse the exponent
 
-            // Calculate exponentiation
-            return pow(var, exponent);
+            return pow(var, exponent); // Calculate exponentiation
         }
     }
     else if (ch == '(') {                  // or a parenthesized expression,
@@ -96,15 +83,8 @@ double Statement::term() {
 
 double Statement::expression() {
     double t = term();
-    double rightExpression; // Declare rightExpression outside the switch block
     while (true) {
         switch (ch) {
-            case '^': // Handle exponentiation
-                cin >> ch; 
-                rightExpression = expression(); // Initialize rightExpression here
-                // Evaluate the exponentiation
-                t = pow(t, rightExpression);
-                break;
             case '+' : t += term(); break;
             case '-' : t -= term(); break;
             default  : return t;
@@ -123,7 +103,7 @@ void Statement::getStatement() {
     double e;
     cout << "Enter a statement: ";
     cin >> ch;
-    if (isspace(ch))
+    if (isspace(ch)) //if first ch is a space, we go to next ch
         cin >> ch;
     readId(id); // Read the first identifier
     strcpy(command, id);
@@ -145,7 +125,7 @@ void Statement::getStatement() {
     if (strcmp(command,"STATUS") == 0)
         cout << *this;
     else if (strcmp(command,"PRINT") == 0) {
-        char delimiter;
+        char separator;
         bool firstVariable = true; // Track if it's the first variable being printed
         while (true) {
             if (!firstVariable) // If it's not the first variable, read the next identifier
@@ -159,7 +139,7 @@ void Statement::getStatement() {
                 cout << ", ";
             cout << id << " = " << findValue(id); // Print the variable
             firstVariable = false;
-            if (!(cin >> delimiter && delimiter == ',')) // Check if there are more variables to print
+            if (!(cin >> separator && separator == ',')) // Check if there are more variables to print
                 break;
         }
         cout << endl;
