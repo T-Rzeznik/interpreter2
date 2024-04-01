@@ -32,6 +32,7 @@ private:
 class Statement {
 public:
     Statement() { 
+        hasBeginOccurred = false; // Initialize flag for "BEGIN" occurrence
     }
     void getStatement();
 private:
@@ -54,8 +55,7 @@ private:
         return out;
     }
     bool findId(char *id);
+    bool hasBeginOccurred; // Flag to track if "BEGIN" has occurred
 };
 
 #endif
-
-

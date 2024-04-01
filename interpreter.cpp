@@ -2,6 +2,7 @@
 
 #include <cctype>
 #include "interpreter.h"
+#include <cmath>
 
 double Statement::findValue(char *id) {
     IdNode tmp(id);
@@ -19,11 +20,6 @@ void Statement::processNode(char* id ,double e) {
          i->value = e;
     else idList.push_front(tmp);
 }
-
-// readId() reads strings of letters and digits that start with
-// a letter, and stores them in array passed to it as an actual
-// parameter. 
-// Examples of identifiers are: var1, x, pqr123xyz, aName, etc.
 
 void Statement::readId(char *id) {
     int i = 0;
@@ -43,14 +39,32 @@ double Statement::factor() {
     double var, minus = 1.0;
     static char id[200];
     cin >> ch;
-    while (ch == '+' || ch == '-') {      // take all '+'s and '-'s.
-        if (ch == '-')
-            minus *= -1.0;
-        cin >> ch;
+
+    // Handle exponentiation
+    if (ch == '^') {
+        cin >> ch; // Consume the '^' symbol
+
+        // Parse the exponent
+        double exponent = factor();
+
+        // Calculate exponentiation
+        return pow(var, exponent);
     }
+
     if (isdigit(ch) || ch == '.') {      // Factor can be a number
          cin.putback(ch);
          cin >> var >> ch;
+
+        // Check for exponentiation after parsing the number
+        if (ch == '^') {
+            cin >> ch; // Consume the '^' symbol
+
+            // Parse the exponent
+            double exponent = factor();
+
+            // Calculate exponentiation
+            return pow(var, exponent);
+        }
     }
     else if (ch == '(') {                  // or a parenthesized expression,
          var = expression();
@@ -64,8 +78,10 @@ double Statement::factor() {
              cin >> ch;
          var = findValue(id);
     }
+
     return minus * var;
 }
+
 
 double Statement::term() {
     double f = factor();
@@ -80,11 +96,12 @@ double Statement::term() {
 
 double Statement::expression() {
     double t = term();
+    double rightExpression; // Declare rightExpression outside the switch block
     while (true) {
         switch (ch) {
             case '^': // Handle exponentiation
                 cin >> ch; 
-                double rightExpression = expression();
+                rightExpression = expression(); // Initialize rightExpression here
                 // Evaluate the exponentiation
                 t = pow(t, rightExpression);
                 break;
@@ -105,50 +122,45 @@ void Statement::getStatement() {
     char id[20], command[20];
     double e;
     cout << "Enter a statement: ";
-    cin  >> ch;
-    readId(id);
-    strcpy(command,id);
+    cin >> ch;
+    if (isspace(ch))
+        cin >> ch;
+    readId(id); // Read the first identifier
+    strcpy(command, id);
     for (int i = 0; i < strlen(command); i++) 
         command[i] = toupper(command[i]); //already case insensitive?
 
-    static bool hasBeginOccurred = false; // track if "BEGIN" has occurred
-
-    if (!hasBeginOccurred) 
+    if (!hasBeginOccurred && strcmp(command, "BEGIN") != 0) // Check if the first lexeme is "BEGIN"
     {
-        if (strcmp(command, "BEGIN") != 0) { // Check if the first lexeme is "BEGIN"
-            issueError("Expected 'BEGIN' as the first lexeme");
-            return;
-        } 
-        else 
-        {
-            hasBeginOccurred = true; // Set the flag to true after encountering "BEGIN"
-        }
-    }
-    else
+        issueError("Expected 'BEGIN' as the first lexeme");
+        return;
+    } 
+    else if (!hasBeginOccurred && strcmp(command, "BEGIN") == 0) 
     {
-        if (strcmp(command, "BEGIN") == 0) // Check if "BEGIN" occurs again after it's already been encountered
-        {  
-            issueError("Unexpected 'BEGIN' in the middle of the input");
-            return; 
-        }
+        hasBeginOccurred = true; // Set the flag to true after encountering "BEGIN"
+        cout << "BEGIN" << endl; // Output "BEGIN" as a standalone statement
+        return;
     }
 
     if (strcmp(command,"STATUS") == 0)
         cout << *this;
-    else if (strcmp(command,"PRINT") == 0) { //updated handling multiple print: print <identifier> {',' <identifier>} '$'
+    else if (strcmp(command,"PRINT") == 0) {
         char delimiter;
-        readId(id);
-        cout << id << " = ";
-        cout << findValue(id); // Print the first variable
-        while (cin >> delimiter && delimiter == ',') {
-            readId(id);
-            cout << ", " << id << " = ";
+        bool firstVariable = true; // Track if it's the first variable being printed
+        while (true) {
+            if (!firstVariable) // If it's not the first variable, read the next identifier
+                readId(id);
             if (!findId(id)) // Check if the variable exists
             {
                 issueError("Variable not found");
                 return;
             }
-            cout << findValue(id); // Print subsequent variables
+            if (!firstVariable) // If it's not the first variable, print a comma
+                cout << ", ";
+            cout << id << " = " << findValue(id); // Print the variable
+            firstVariable = false;
+            if (!(cin >> delimiter && delimiter == ',')) // Check if there are more variables to print
+                break;
         }
         cout << endl;
     }
@@ -159,12 +171,16 @@ void Statement::getStatement() {
             cin >> ch;
         if (ch == '=') {
             e = expression();
-            if (ch != '$')  //changing terminator ot $ instead ;
+            if (ch != '$')  //changing terminator $ instead ;
                 issueError("There are some extras in the statement");
             else processNode(id,e);
         }
         else issueError("'=' is missing");
     }
 }
+
+
+
+
 
 
