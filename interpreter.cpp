@@ -21,7 +21,7 @@ void Statement::processNode(char* id ,double e) {
     else idList.push_front(tmp);
 }
 
-void Statement::readId(char *id) {
+void Statement::readId(char *id) { //function skips ',' already
     int i = 0;
     if (isspace(ch))
          cin >> ch;       // skip blanks;
