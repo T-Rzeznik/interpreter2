@@ -100,7 +100,7 @@ void Statement::getStatement() {
     readId(id); // Read the first identifier
     strcpy(command, id);
     for (int i = 0; i < strlen(command); i++) 
-        command[i] = toupper(command[i]); // Convert the command to uppercase for case insensitivity
+        command[i] = toupper(command[i]); // Command to uppercase for case insensitivity
 
     if (!hasBeginOccurred && strcmp(command, "BEGIN") != 0) // Check if the first lexeme is "BEGIN"
     {
