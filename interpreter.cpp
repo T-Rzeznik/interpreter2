@@ -62,11 +62,12 @@ double Statement::factor() {
 
 
 double Statement::term() {
-    double f = factor(); // Change to call power() instead of factor()
+    double f = factor(); 
     while (true) {
         switch (ch) {
             case '*' : f *= factor(); break;
             case '/' : f /= factor(); break;
+            case '^' : f = pow(f,factor()); break;
             default  : return f;
         }
     }
@@ -117,8 +118,17 @@ void Statement::getStatement() {
         cout << *this;
     else if (strcmp(command,"PRINT") == 0) { // Check if the command is "PRINT"
         readId(id);
-        cout << id << " = " << findValue(id) << endl;
+        cout << id << " = " << findValue(id) << endl; 
+        
+        while (isalpha(cin.peek()) || cin.peek() != '$')
+        {
+            cin >> ch;
+            readId(id);
+            cout << id << " = " << findValue(id) << endl;
+        }
+        cin.ignore();
     }
+
     else if (strcmp(command,"END") == 0) // Check if the command is "END"
         exit(0);
     else {
