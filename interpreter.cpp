@@ -67,7 +67,7 @@ double Statement::term() {
         switch (ch) {
             case '*' : f *= factor(); break;
             case '/' : f /= factor(); break;
-            case '^' : f = pow(f,factor()); break;
+            case '^' : f = pow(f,factor()); break; //added '^' using pow function, <cmath>
             default  : return f;
         }
     }
@@ -120,11 +120,11 @@ void Statement::getStatement() {
         readId(id);
         cout << id << " = " << findValue(id) << endl; 
         
-        while (isalpha(cin.peek()) || cin.peek() != '$')
+        while (isalpha(cin.peek()) || cin.peek() != '$') // Check if next in iostream is alphanumeric (ASC II), and its not the terminator
         {
-            cin >> ch;
-            readId(id);
-            cout << id << " = " << findValue(id) << endl;
+            cin >> ch; //get value for ch
+            readId(id);  //read id
+            cout << id << " = " << findValue(id) << endl; //print id
         }
         cin.ignore();
     }
