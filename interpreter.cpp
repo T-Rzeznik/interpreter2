@@ -120,7 +120,7 @@ void Statement::getStatement() {
         readId(id);
         cout << id << " = " << findValue(id) << endl; 
         
-        while (isalpha(cin.peek()) || cin.peek() != '$') // Check if next in iostream is alphanumeric (ASC II), and its not the terminator
+        while (isalpha(cin.peek()) || cin.peek() != '$') // Check if next in input stream is alphanumeric (ASC II), and its not the terminator
         {
             cin >> ch; //get value for ch
             readId(id);  //read id
